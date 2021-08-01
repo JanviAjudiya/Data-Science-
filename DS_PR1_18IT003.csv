@@ -1,0 +1,26 @@
+import requests
+from bs4 import BeautifulSoup
+import pandas as pd
+
+Period=[]
+Short_description=[]
+Temperature=[]
+
+url = "https://forecast.weather.gov/MapClick.php?lat=34.0536&lon=-118.2454"
+r = requests.get(url)
+
+soup = BeautifulSoup(r.content,"html.parser")
+week = soup.find(id="seven-day-forecast-body")
+items = soup.find_all("div",class_ = "tombstone-container")
+
+period_name = [item.find(class_="period-name").get_text() for item in items]
+short_desc = [item.find(class_="short-desc").get_text() for item in items]
+temp = [item.find(class_="temp").get_text() for item in items]
+
+Period.append(period_name)
+Short_description.append(short_desc)
+Temperature.append(temp)
+
+a = {"Period" : period_name,"Short Description" : short_desc,"Temperature" : temp}
+df = pd.DataFrame.from_dict(a)
+df.to_csv('18IT003.csv', index=False, encoding='utf-8')
